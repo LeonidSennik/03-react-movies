@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
-import type { Movie } from './types/movie';
-import { MovieModal } from './components/MovieModal/MovieModal';
-import { fetchMovies } from './services/movieService';
+import type { Movie } from '../../types/movie';
+import { MovieModal } from '../MovieModal/MovieModal';
+import { fetchMovies } from '../../services/movieService';
 import css from './App.module.css';
 
 export default function App() {
