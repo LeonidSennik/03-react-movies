@@ -1,12 +1,8 @@
 import { useEffect, useState } from 'react';
-import axios from 'axios'; 
 import type { Movie } from './types/movie';
 import { MovieModal } from './components/MovieModal/MovieModal';
+import { fetchMovies } from './services/movieService';
 import css from './App.module.css';
-
-const TOKEN = import.meta.env.VITE_TMDB_TOKEN;
-
-const API_URL = 'https://api.themoviedb.org/3/search/movie';
 
 export default function App() {
   const [query, setQuery] = useState('');
@@ -14,30 +10,18 @@ export default function App() {
   const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null);
 
   useEffect(() => {
-    if (!TOKEN) {
-      console.error('TMDB token is missing. Please set VITE_TMDB_TOKEN in .env');
-      return;
-    }
-
     if (!query) return;
 
-    const fetchMovies = async () => {
+    const loadMovies = async () => {
       try {
-        const response = await axios.get(API_URL, {
-          params: { query },
-          headers: {
-            Authorization: `Bearer ${TOKEN}`, 
-            accept: 'application/json',
-          },
-        });
-
+        const response = await fetchMovies({ query });
         setMovies(response.data.results || []);
       } catch (error) {
         console.error('Error fetching movies:', error);
       }
     };
 
-    fetchMovies();
+    loadMovies();
   }, [query]);
 
   const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
