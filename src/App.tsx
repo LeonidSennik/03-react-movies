@@ -5,7 +5,6 @@ import { MovieModal } from './components/MovieModal/MovieModal';
 import css from './App.module.css';
 
 const TOKEN = import.meta.env.VITE_TMDB_TOKEN;
-console.log('TOKEN:', TOKEN); 
 
 const API_URL = 'https://api.themoviedb.org/3/search/movie';
 
