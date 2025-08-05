@@ -1,22 +1,30 @@
 'use client';
 
-import { useFormState } from 'react-dom';
-import { useEffect } from 'react';
-import { searchAction } from '../actions/search';
+import { useId } from 'react';
+import { toast } from 'react-hot-toast';
 import styles from './SearchBar.module.css';
 
 interface SearchBarProps {
-  onQueryChange: (query: string) => void;
+  onSubmit: (query: string) => void;
 }
 
-export const SearchBar = ({ onQueryChange }: SearchBarProps) => {
-  const [query, formAction] = useFormState(searchAction, '');
+export const SearchBar = ({ onSubmit }: SearchBarProps) => {
+  const id = useId();
 
-  useEffect(() => {
-    if (query) {
-      onQueryChange(query);
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    const formData = new FormData(event.currentTarget);
+    const rawQuery = formData.get('query');
+    const trimmedQuery = typeof rawQuery === 'string' ? rawQuery.trim() : '';
+
+    if (!trimmedQuery) {
+      toast.error('Please enter your search query.');
+      return;
     }
-  }, [query, onQueryChange]);
+
+    onSubmit(trimmedQuery);
+  };
 
   return (
     <header className={styles.header}>
@@ -29,17 +37,21 @@ export const SearchBar = ({ onQueryChange }: SearchBarProps) => {
         >
           Powered by TMDB
         </a>
-        <form className={styles.form} action={formAction}>
+        <form className={styles.form} onSubmit={handleSubmit}>
+          <label htmlFor={`${id}-query`} className={styles.label}>
+            Пошук
+          </label>
           <input
             className={styles.input}
             type="text"
             name="query"
+            id={`${id}-query`}
             autoComplete="off"
-            placeholder="Search movies..."
+            placeholder="Введіть назву фільму..."
             autoFocus
           />
           <button className={styles.button} type="submit">
-            Search
+            Шукати
           </button>
         </form>
       </div>
