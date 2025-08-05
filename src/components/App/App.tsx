@@ -1,3 +1,6 @@
+'use client';
+import { Loader } from '../Loader/Loader';
+import { ErrorMessage } from '../ErrorMessage/ErrorMessage';
 import { useEffect, useState } from 'react';
 import { Toaster } from 'react-hot-toast';
 import { SearchBar } from '../SearchBar/SearchBar';
@@ -8,7 +11,7 @@ import type { Movie } from '../../types/movie';
 import css from './App.module.css';
 
 export default function App() {
-  const [query, setQuery] = useState('');
+  const [query,setQuery] = useState('');
   const [movies, setMovies] = useState<Movie[]>([]);
   const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -34,19 +37,22 @@ export default function App() {
   }, [query]);
 
   return (
-    <div className={css.container}>
-      <Toaster position="top-right" />
-      <h1>🎬 Movie Explorer</h1>
-      <SearchBar onSubmit={setQuery} />
+  <div className={css.container}>
+    <Toaster position="top-right" />
+    <h1>🎬 Movie Explorer</h1>
 
-      {isLoading && <p>Loading...</p>}
-      {error && <p className={css.error}>{error}</p>}
+    {isLoading && <Loader />}
+    {error && <ErrorMessage message={error} />}
+    {!isLoading && !error && movies.length === 0 && (
+      <p className={css.empty}>No movies found for your query.</p>
+    )}
 
-      <MovieGrid movies={movies} onSelect={setSelectedMovie} />
+    <SearchBar onQueryChange={setQuery} />
+    <MovieGrid movies={movies} onSelect={setSelectedMovie} />
 
-      {selectedMovie && (
-        <MovieModal movie={selectedMovie} onClose={() => setSelectedMovie(null)} />
-      )}
-    </div>
-  );
+    {selectedMovie && (
+      <MovieModal movie={selectedMovie} onClose={() => setSelectedMovie(null)} />
+    )}
+  </div>
+);
 }

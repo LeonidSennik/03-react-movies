@@ -1,5 +1,5 @@
-import css from './Loader.module.css';
+import styles from './Loader.module.css';
 
-export const Loader = () => {
-  return <p className={css.text}>Loading movies, please wait...</p>;
-};
+export const Loader = () => (
+  <div className={styles.loader}>Loading...</div>
+);
