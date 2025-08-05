@@ -9,20 +9,23 @@ interface SearchBarProps {
 
 export const SearchBar = ({ onSubmit }: SearchBarProps) => {
   const [query, setQuery] = useState('');
+const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  e.preventDefault();
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const formData = new FormData(e.currentTarget);
+  const rawQuery = formData.get('query');
 
-    const trimmedQuery = query.trim();
+  const trimmedQuery = typeof rawQuery === 'string' ? rawQuery.trim() : '';
 
-    if (trimmedQuery === '') {
-      toast.error('Please enter your search query.');
-      return;
-    }
+  if (trimmedQuery === '') {
+    toast.error('Please enter your search query.');
+    return;
+  }
 
-    onSubmit(trimmedQuery);
-    setQuery('');
-  };
+  onSubmit(trimmedQuery);
+  setQuery('');
+};
+  
 
   return (
     <header className={styles.header}>
