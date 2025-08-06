@@ -5,26 +5,11 @@ import { toast } from 'react-hot-toast';
 import styles from './SearchBar.module.css';
 
 interface SearchBarProps {
-  onSubmit: (query: string) => void;
+  action: (formData: FormData) => void | Promise<void>;
 }
 
-export const SearchBar = ({ onSubmit }: SearchBarProps) => {
+export const SearchBar = ({ action }: SearchBarProps) => {
   const id = useId();
-
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-
-    const formData = new FormData(event.currentTarget);
-    const rawQuery = formData.get('query');
-    const trimmedQuery = typeof rawQuery === 'string' ? rawQuery.trim() : '';
-
-    if (!trimmedQuery) {
-      toast.error('Please enter your search query.');
-      return;
-    }
-
-    onSubmit(trimmedQuery);
-  };
 
   return (
     <header className={styles.header}>
@@ -37,7 +22,20 @@ export const SearchBar = ({ onSubmit }: SearchBarProps) => {
         >
           Powered by TMDB
         </a>
-        <form className={styles.form} onSubmit={handleSubmit}>
+        <form
+          className={styles.form}
+          action={async (formData) => {
+            const rawQuery = formData.get('query');
+            const trimmedQuery = typeof rawQuery === 'string' ? rawQuery.trim() : '';
+
+            if (!trimmedQuery) {
+              toast.error('Please enter your search query.');
+              return;
+            }
+
+            await action(formData);
+          }}
+        >
           <label htmlFor={`${id}-query`} className={styles.label}>
             Пошук
           </label>

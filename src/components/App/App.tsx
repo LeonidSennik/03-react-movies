@@ -17,32 +17,38 @@ export default function App() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const handleSearchSubmit = async (query: string) => {
-    setIsLoading(true);
-    setError(null);
-    setMovies([]); 
+const handleSearchSubmit = async (formData: FormData) => {
+  const rawQuery = formData.get('query');
+  const trimmedQuery = typeof rawQuery === 'string' ? rawQuery.trim() : '';
 
-    try {
-      const results = await fetchMovies({ query });
+  if (!trimmedQuery) {
+    toast.error('Please enter your search query.');
+    return;
+  }
 
-      if (results.length === 0) {
-        toast('Фільми не знайдено за вашим запитом.');
-      }
+  setIsLoading(true);
+  setError(null);
 
-      setMovies(results);
-    } catch {
-      setError('Не вдалося отримати фільми.');
-    } finally {
-      setIsLoading(false);
+  try {
+    const results = await fetchMovies({ query: trimmedQuery });
+    if (results.length === 0) {
+      toast('No movies found for your query.');
     }
-  };
+    setMovies(results);
+  } catch (err) {
+    setError('Failed to fetch movies. Please try again.');
+    console.error(err);
+  } finally {
+    setIsLoading(false);
+  }
+};
 
   return (
     <div className={css.container}>
       <Toaster position="top-right" />
       <h1>🎬 Movie Explorer</h1>
 
-      <SearchBar onSubmit={handleSearchSubmit} />
+      <SearchBar action={handleSearchSubmit} />
 
       {isLoading && <Loader />}
       {error && <ErrorMessage message={error} />}
