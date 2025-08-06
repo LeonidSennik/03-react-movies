@@ -5,10 +5,10 @@ import { toast } from 'react-hot-toast';
 import styles from './SearchBar.module.css';
 
 interface SearchBarProps {
-  action: (formData: FormData) => void | Promise<void>;
+  onSubmit: (query: string) => void | Promise<void>;
 }
 
-export const SearchBar = ({ action }: SearchBarProps) => {
+export const SearchBar = ({ onSubmit }: SearchBarProps) => {
   const id = useId();
 
   return (
@@ -22,34 +22,32 @@ export const SearchBar = ({ action }: SearchBarProps) => {
         >
           Powered by TMDB
         </a>
-        <form
-          className={styles.form}
-          action={async (formData) => {
-            const rawQuery = formData.get('query');
-            const trimmedQuery = typeof rawQuery === 'string' ? rawQuery.trim() : '';
 
-            if (!trimmedQuery) {
-              toast.error('Please enter your search query.');
-              return;
-            }
+<form
+  className={styles.form}
+  action={async (formData) => {
+    const rawQuery = formData.get('query');
+    const trimmedQuery = typeof rawQuery === 'string' ? rawQuery.trim() : '';
 
-            await action(formData);
-          }}
-        >
-          <label htmlFor={`${id}-query`} className={styles.label}>
-            Пошук
-          </label>
-          <input
-            className={styles.input}
+    if (!trimmedQuery) {
+      toast.error('Please enter your search query.');
+      return;
+    }
+
+    await onSubmit(trimmedQuery);
+  }}
+>
+   <input
+            className={styles.input}  
             type="text"
             name="query"
             id={`${id}-query`}
             autoComplete="off"
-            placeholder="Введіть назву фільму..."
+            placeholder="Search movies..."
             autoFocus
           />
           <button className={styles.button} type="submit">
-            Шукати
+            Search
           </button>
         </form>
       </div>
